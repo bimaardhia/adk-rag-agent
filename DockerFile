@@ -1,0 +1,25 @@
+# Step 1: Use an official Python runtime as a parent image
+# Using 'slim' is a good practice for smaller image sizes
+FROM python:3.11-slim
+
+# Step 2: Set the working directory inside the container
+WORKDIR /app
+
+# Step 3: Copy the requirements file into the container
+# This is done first to leverage Docker's layer caching.
+# Dependencies won't be re-installed unless requirements.txt changes.
+COPY requirements.txt .
+
+# Step 4: Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Step 5: Copy the rest of your application's code into the container
+COPY . .
+
+# Step 6: Expose the port the app runs on
+# The ADK web server defaults to port 8080
+EXPOSE 8080
+
+# Step 7: Define the command to run your application
+# Use --host=0.0.0.0 to make the server accessible from outside the container
+CMD ["adk", "web", "--host=0.0.0.0"]
